@@ -43,5 +43,9 @@ on s.staid = ebt.staid and s.souid = ebt.souid and substring(s.elei from 1 for 2
 where ebt.tg is null
 
 
+
+
+
+
 	
 
