@@ -114,7 +114,7 @@ where s2.cn = 'DE'
 group by decade) t6
 on t6.decade = t5.decade
 ```
-execution time in a AirMacBook with M1 processor 10m and 33 stations
+execution time in a AirMacBook with M1 processor 10 mins and 33 secs
 <h2>Task 2</h2>
 
 ```SQL
@@ -208,5 +208,6 @@ group by div(extract(year from ebr3.date), 10)) t4
 on t4.decade = t3.decade) table_rr
 on table_tg.decade_tg = table_rr.decade_rr
 ```
+execution time in a AirMacBook with M1 processor 7 mins and 11 secs
 
 
