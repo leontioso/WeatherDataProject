@@ -1,11 +1,25 @@
 select t1.mean_temp, t1.median_temp,
 t1.max_temp, t1.min_temp, t2.days_with_null days_with_null_rr,
 t3.total_days - t2.days_with_null days_valid_temp,
+<<<<<<< HEAD
 cast(concat(cast((t1.decade + 10) as varchar),'0101') as date) - cast(concat(cast((t1.decade) as varchar),'0101') as date) - t3.total_days missing_days_temp,
 t4.mean_rr, t4.median_rr,
 t4.max_rr, t4.min_rr, t5.days_with_null days_with_null_rr,
 t6.total_days - t5.days_with_null days_valid_rr,
 cast(concat(cast((t4.decade + 10) as varchar),'0101') as date) - cast(concat(cast((t4.decade) as varchar),'0101') as date) - t6.total_days missing_days_rr,
+=======
+case 
+	when t1.decade is not null then cast(concat(cast((t1.decade + 10) as varchar),'0101') as date) - cast(concat(cast((t1.decade) as varchar),'0101') as date) - t3.total_days
+	else null
+end missing_days_temp,
+t4.mean_rr, t4.median_rr,
+t4.max_rr, t4.min_rr, t5.days_with_null days_with_null_rr,
+t6.total_days - t5.days_with_null days_valid_rr,
+case 
+	when t4.decade is not null then cast(concat(cast((t4.decade + 10) as varchar),'0101') as date) - cast(concat(cast((t4.decade) as varchar),'0101') as date) - t6.total_days 
+	else null
+end missing_days_rr,
+>>>>>>> 539918467a20db9864ff382a8bf5706fb9961b11
 t4.decade,
 t1.decade
 from
@@ -83,6 +97,7 @@ inner join stations s2
 on ebr3.staid = s2.id
 where s2.cn = 'DE'
 group by decade) t6
+<<<<<<< HEAD
 on t6.decade = t5.decade
 
 
@@ -93,3 +108,6 @@ on t6.decade = t5.decade
 
 	
 
+=======
+on t6.decade = t5.decade
+>>>>>>> 539918467a20db9864ff382a8bf5706fb9961b11
