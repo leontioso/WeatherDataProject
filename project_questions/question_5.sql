@@ -1,3 +1,13 @@
+/*
+For this task I used the command 'CREATE EXTENSION CUBE' and then the 'CREATE EXTENSION EARTHDISTANCE'. With these extensions 
+I can use the '<@>' operator that counts the distance (in 2 dimensions) between two Points (datatype of postgresql). Morever i assumed random
+cordinates (30, 30) to answer to this task.
+First I create the t1 table that returns me the closest station to the random point. Then I counted the monthly average temperature
+for this station. Then I created t3 table for the monthly average temperatures of the stations and I used inner join with t2
+on the same month and year and for stations that are in radius 200 km from the station in t2. This join gave me t4. I grouped t4
+to count the near stations and the average of their temperature.
+*/
+
 create extension if not exists cube;
 create extension if not exists earthdistance;
 
