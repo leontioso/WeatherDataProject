@@ -1,6 +1,3 @@
-CREATE EXTENSION IF NOT EXISTS tablefunc;
-
-
 select avg(t1.monthly_avg), t1.cn
 from
 (select 
@@ -13,6 +10,6 @@ inner join stations s
 on s.id = ebr.staid 
 where ebr.q_rr = 0
 group by extract(month from ebr.date), extract(year from ebr.date), cn
-order by "year", "month") t1
+order by monthly_avg desc, "year", "month") t1
 group by t1.cn
 order by avg(t1.monthly_avg) desc

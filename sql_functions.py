@@ -147,8 +147,4 @@ def update_eca_tables_withnull(code_set):
                                     set {code} = null
                                     where {code} = -9999
                                 ''')
-                print(f'Eca_table_{code} updated')
-           
-    
-            
-                                           
+                print(f'Eca_table_{code} updated') 

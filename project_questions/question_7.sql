@@ -9,5 +9,6 @@ inner join stations s
 on s.id = ebr.staid 
 where ebr.q_rr = 0
 group by s.cn
-order by   stations desc, counts desc, avg_temp desc, max_rr desc
+order by   stations desc, counts desc, avg_rr desc, max_rr desc
+
 

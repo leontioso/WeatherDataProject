@@ -1,15 +1,3 @@
-/*
-I worked with same methodology creating three tables for radius 50 km, 100 km and 500 km and then i joined them together
-on the same id and date. The difference with the previous task is that I am looking for the surrounding stations' values 
-for every null value in a station. Maximum radius of the surrounding is 500km. So I select the dates and stations with null
-vaues and then I used an inner join on the same date and on distance between station less tha 500km. After that I grouped that
-by date and the stations that i am interested for counting the average of the stations within 500 km radius and creating cases for 
-50 km and 100km radius. After that I grouped that per month for every station. The problem was that I had memory issus in my
-AirMacBook (256 gb total memory and the rr table in the database is 24 gb) so I used two samples of data about 15% of the original size.
-Execution time was 29m and 31s. Some observations from the result is that at least two averages are very close and in some cases 
-the three averages are close enough. We could test giving value to the null values of the station as the resuslt of the average of the three averages
-for this particular month.
-*/
 select 
 	t4.staid, count(count_50km) monthly_counts_50km, avg(mean_50km) monthly_mean_50km,
 	count(count_100km) monthly_counts_100km, avg(mean_100km) monthly_mean_100km,
@@ -98,13 +86,13 @@ count(t2.rr) counts_500km,
 avg(t2.rr) mean_500km
 from
 (select ebr.*, s.* 
-from eca_blend_rr ebr tablesample system(15)
+from eca_blend_rr ebr tablesample system(30)
 inner join stations s
 on ebr.staid = s.id
 where s.cn = 'DE' and rr is null) t1
 inner join 
 (select ebr2.rr, ebr2.date, ebr2.staid, s2.cords
-from eca_blend_rr ebr2 tablesample system(15)
+from eca_blend_rr ebr2 tablesample system(30)
 inner join stations s2
 on ebr2.staid = s2.id
 where q_rr = 0) t2
