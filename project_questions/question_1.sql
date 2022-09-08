@@ -1,13 +1,6 @@
 select t1.mean_temp, t1.median_temp,
 t1.max_temp, t1.min_temp, t2.days_with_null days_with_null_rr,
 t3.total_days - t2.days_with_null days_valid_temp,
-<<<<<<< HEAD
-cast(concat(cast((t1.decade + 10) as varchar),'0101') as date) - cast(concat(cast((t1.decade) as varchar),'0101') as date) - t3.total_days missing_days_temp,
-t4.mean_rr, t4.median_rr,
-t4.max_rr, t4.min_rr, t5.days_with_null days_with_null_rr,
-t6.total_days - t5.days_with_null days_valid_rr,
-cast(concat(cast((t4.decade + 10) as varchar),'0101') as date) - cast(concat(cast((t4.decade) as varchar),'0101') as date) - t6.total_days missing_days_rr,
-=======
 case 
 	when t1.decade is not null then cast(concat(cast((t1.decade + 10) as varchar),'0101') as date) - cast(concat(cast((t1.decade) as varchar),'0101') as date) - t3.total_days
 	else null
@@ -19,13 +12,9 @@ case
 	when t4.decade is not null then cast(concat(cast((t4.decade + 10) as varchar),'0101') as date) - cast(concat(cast((t4.decade) as varchar),'0101') as date) - t6.total_days 
 	else null
 end missing_days_rr,
->>>>>>> 539918467a20db9864ff382a8bf5706fb9961b11
 t4.decade,
 t1.decade
 from
-/* 
-t1 is the table for the median, mean, max, min counting only valid values
-*/
 (select 
 	avg(ebt.tg) mean_temp,
 	percentile_cont(0.5) within group(order by ebt.tg) median_temp, 
@@ -37,10 +26,6 @@ inner join stations s
 on ebt.staid = s.id 
 where ebt.q_tg = 0 and s.cn='DE'
 group by div(extract(year from ebt.date), 10)) t1
-/* 
-t2 is the table for where days that have non valid values are counted
-t2 is joined with full outer join in case that there decades in t2 not included in t1
-*/
 full outer join
 (select count(*) days_with_null, div(extract(year from dates_with_null.date_with_null), 10) * 10 decade
 from
@@ -51,11 +36,6 @@ where ebt2.tg is null or ebt2.q_tg != 0
 group by date) dates_with_null
 group by div(extract(year from dates_with_null.date_with_null), 10) * 10) t2
 on t1.decade = t2.decade
-/*
-t3 table counts all the distinct dates that we have measurements. From these days we substract the days with null values
-to get the days with only valid values. Still there is a possibility not to exist dates that there are no measurments at all. We can
-get that days by substracting the "total_days" from the total days that a decade has.
-*/
 inner join
 (select count(distinct(ebt3.date)) total_days, div(extract(year from ebt3.date), 10) * 10 decade
 from eca_blend_tg ebt3
@@ -64,9 +44,6 @@ on ebt3.staid = s2.id
 where s2.cn = 'DE'
 group by decade) t3
 on t3.decade = t2.decade
-/* we follow the same procedure for the different weather variable and we use a full outer join in case of there decades 
- that are not included at the previous weather variable
- */
 full outer join
 (select 
 	avg(ebr.rr) mean_rr,
@@ -97,17 +74,4 @@ inner join stations s2
 on ebr3.staid = s2.id
 where s2.cn = 'DE'
 group by decade) t6
-<<<<<<< HEAD
 on t6.decade = t5.decade
-
-
-
-
-
-
-
-	
-
-=======
-on t6.decade = t5.decade
->>>>>>> 539918467a20db9864ff382a8bf5706fb9961b11
