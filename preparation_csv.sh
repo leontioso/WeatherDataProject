@@ -1,12 +1,14 @@
 #! /bin/bash
 
+#change the current directory
+cd ~/Desktop/WeatherData
 #make a folder for csvs
 mkdir csv_files
 #Starting with the eca tables 
-for weather_var in $(ls ../../WeatherData/ | cut -c 11-12)
+for weather_var in $(ls ~/Desktop/WeatherData/ | cut -c 11-12)
 do
 
-tail -n +22 -q /home/leontioso/Desktop/WeatherData/ECA_blend_$weather_var/*_STAID*.txt > csv_files/ECA_blend_$weather_var.csv &
+tail -n +22 -q /home/leontioso/Desktop/WeatherData/ECA_blend_$weather_var/*_STAID*.txt > csv_files/ECA_blend_$weather_var.csv | echo "ECA_blend_$weather_var csv created" &
 done
 
 #creating the elements csv
