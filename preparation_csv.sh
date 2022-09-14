@@ -27,6 +27,6 @@ tail -n +20 -q /home/leontioso/Desktop/WeatherData/*/stations.txt | sort | uniq 
 
 tail -n +26 -q /home/leontioso/Desktop/WeatherData/*/sources.txt | cut -c 1-12 > csv_files/sources_1st.csv
 tail -n +26 -q /home/leontioso/Desktop/WeatherData/*/sources.txt | cut -c 14-53 | tr , ' ' > csv_files/sources_2nd.csv
-tail -n +26 -q /home/leontioso/Desktop/WeatherData/*/sources.txt | cut -c 55-163 > csv_files/sources_3rd.csv
+tail -n +26 -q /home/leontioso/Desktop/WeatherData/*/sources.txt | cut -c 55-162 > csv_files/sources_3rd.csv
 paste -d ',' csv_files/sources_1st.csv csv_files/sources_2nd.csv csv_files/sources_3rd.csv | sort | uniq  > csv_files/sources.csv
 rm csv_files/sources_*.csv

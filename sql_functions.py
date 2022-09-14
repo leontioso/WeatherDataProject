@@ -1,4 +1,6 @@
 import psycopg2
+import concurrent.futures
+from functools import partial
 
 def create_populate_eca_table(weather_var_code):
     conn = psycopg2.connect('dbname=weatherdata user=postgres password=postgres host=localhost')
@@ -13,7 +15,7 @@ def create_populate_eca_table(weather_var_code):
     conn.close()
     return f'eca_blend_{weather_var_code} table created'
                 
-def create_populate_sources(code):
+def create_populate_sources(code_set):
     conn = psycopg2.connect('dbname=weatherdata user=postgres password=postgres host=localhost')
     with conn:
         with conn.cursor() as cur:
@@ -59,11 +61,21 @@ def create_populate_sources(code):
                            	  trim(parnam)
                            from sources_temp;
                            
-                           create table if not exists sources (staid integer, souid integer, souname varchar(40), cn varchar(2), cords Point,
+                           create table sources (staid integer, souid integer, souname varchar(40), cn varchar(2), cords Point,
 						   hght smallint, elei varchar(4), start date, stop date, parid smallint, parnam varchar(51));''')
             
-            
-            cur.execute(f'''
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                partial_combine = partial(combine_sources_eca_tables, cur=cur)
+                results = executor.map(partial_combine, code_set)
+                for result in results:
+                    print(result)
+                    
+          
+    conn.close()
+    
+    
+def combine_sources_eca_tables(code, cur):
+    cur.execute(f'''
                             insert into sources (staid, souid, souname, cn, cords, hght, elei, start, stop, parid, parnam)
                             select 
                             st2.staid, st2.souid, st2.souname, st2.cn, Point(st2.cords[0], st2.cords[1]), st2.hght, st2.elei, st2.start, st2.stop, st2.parid, st2.parnam
@@ -75,11 +87,10 @@ def create_populate_sources(code):
                             on  st.staid = eca_blend.staid  and st.souid = eca_blend.souid  and eca_blend.date between st.start and st.stop
                             where substring(st.elei from 1 for 2) = '{code.upper()}') st2
                             where st2.rn = 1
-                            ''')       
-    conn.close()
-    return f'Inserted values into table sources using eca_blend_{code} table'
+                            ''')
+    return f'eca_blend_{code} combined'       
     
-    
+        
     
 def create_populate_elements():
     conn = psycopg2.connect('dbname=weatherdata user=postgres password=postgres host=localhost')
@@ -148,3 +159,4 @@ def update_eca_tables_withnull(code):
                                     where {code} = -9999
                                 ''')
             print(f'Eca_table_{code} updated') 
+    conn.close()
