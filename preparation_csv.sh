@@ -35,7 +35,6 @@ rm csv_files/sources_*.csv
 #create tables in weatherdata database
 for weather_var in ${array_weather_var[@]}
 do
-echo "Creating weather data table $weather_var"
 psql weatherdata -c "CREATE TABLE eca_blend_$weather_var (staid integer, souid integer, date date, $weather_var integer, q_$weather_var integer check( q_$weather_var in (0, 1, 9)));  " | echo "ECA_blend_$weather_var created"
 done
 
@@ -51,12 +50,14 @@ echo creating table stations
 psql weatherdata -c 'create table stations_temp (id integer, staname varchar(40), cn varchar(2),lat varchar(9), lon varchar(10), hght smallint)';
 cat /home/leontioso/Desktop/WeatherData/csv_files/stations.csv | psql weatherdata -c "COPY stations_temp FROM STDIN (DELIMITER ',');"
 psql weatherdata -f ~/Desktop/WeatherData/sql_quarries/create_stations.sql
+echo table stations created
 
 #create table elements
 echo creating table elements
 psql weatherdata -c 'create table elements_temp (id varchar(5), "desc" varchar(150), unit varchar(15)) ;'
 cat /home/leontioso/Desktop/WeatherData/csv_files/elements.csv | psql weatherdata -c "COPY elements_temp FROM STDIN (DELIMITER ',');"
 psql weatherdata -f ~/Desktop/WeatherData/sql_quarries/create_elements.sql
+echo table elements created
 
 #create table sources
 echo creating table sources
@@ -65,3 +66,4 @@ psql weatherdata -c 'create table sources_temp (staid integer, souid integer, so
 
 iconv -f ISO-8859-1 -t UTF-8 csv_files/sources.csv | psql weatherdata -c "COPY sources_temp FROM STDIN (DELIMITER ',');" 
 psql weatherdata -f ~/Desktop/WeatherData/sql_quarries/create_sources.sql
+echo table sources created
