@@ -3,13 +3,13 @@ import concurrent.futures
 from functools import partial
 
 def create_populate_eca_table(weather_var_code):
-    conn = psycopg2.connect('dbname=weatherdata user=postgres password=postgres host=localhost')
+    conn = psycopg2.connect('dbname=weatherdata user=leontioso password=postgres host=localhost')
     with conn:
         with conn.cursor() as cur:
             print(f'Creating eca table {weather_var_code}')
             cur.execute(f'''create table eca_blend_{weather_var_code} (staid integer, souid integer, date date, {weather_var_code} integer, q_{weather_var_code} integer check( q_{weather_var_code} in (0, 1, 9)));                
                 copy eca_blend_{weather_var_code} (staid, souid, date, {weather_var_code}, q_{weather_var_code})
-                from program 'tail -q -n +22 /home/leontioso/Desktop/WeatherData/ECA_blend_{weather_var_code}/{weather_var_code.upper()}_STAID* '
+                from program 'cat /home/leontioso/Desktop/WeatherData/csv_files/ECA_blend_{weather_var_code}.csv '
                  delimiter ','
                  ''')
     conn.close()

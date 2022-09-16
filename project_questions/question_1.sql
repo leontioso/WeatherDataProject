@@ -75,3 +75,30 @@ on ebr3.staid = s2.id
 where s2.cn = 'DE'
 group by decade) t6
 on t6.decade = t5.decade
+
+--alternative query
+select	
+	avg(mean_temp_daily) mean_decade,
+	percentile_cont(0.5) within group (order by t1.median_temp_daily) median_temp_decade,
+	max(max_temp_daily) max_decade,
+	min(min_temp_daily) min_decade,
+	sum(invalid_date_flag) invalid_days,
+	count(invalid_date_flag) total_days,
+	div(extract(year from date), 10) * 10 decade
+from
+		(select 
+			avg(ebt.tg),avg(ebt.tg) mean_temp_daily,
+			percentile_cont(0.5) within group(order by ebt.tg) median_temp_daily, 
+			max(ebt.tg) max_temp_daily, 
+			min(ebt.tg) min_temp_daily,
+			ebt.date date,
+			case 
+				when sum(q_tg) > 0 then 1
+				else 0
+			end invalid_date_flag
+		from eca_blend_tg ebt 
+		inner join stations st
+		on st.id = ebt.staid 
+		where st.cn = 'DE'
+		group by ebt.date) t1
+group by div(extract(year from date), 10)
